@@ -294,6 +294,7 @@ public class PegGame {
         for (int i = 0 ; i < max ; i++) {
             Move move = new Move(i, i, i);
             applyMove(move);
+            logger.info("Checking : " + i);
             recursiveSolve(move);
         }
         logger.info("Best Worst Case Scenario\n");
@@ -314,10 +315,8 @@ public class PegGame {
             System.exit(0);
         }
         */
-        System.out.println("Number of pegs : " + numberOfPegs +
-                " current best : " + currentBest);
         if (numberOfPegs > currentBest) {
-            printBoard();
+            //printBoard();
 
             // We have to loop through all pegs to see if we can make a move on any
             // of them. For each possible move we will make it and then we will
