@@ -41,158 +41,6 @@ public class PegGame {
     }
 
     /**
-     * A method that goes through various methods to test.
-     */
-    public void test() {
-        logger.info("Test method");
-
-        // For each peg number we want to print out the row and column for it.
-        String msg = "Peg Number (Row, Displacement) Recreated Peg Number";
-        for (int i = 0 ; i < pegBoard.length ; i++) {
-            int r = getRow(i);
-            int d = getDisplacement(i);
-            msg += i + " (" + r +  "," + d + ") " + getPegNumber(r, d) + "\n";
-        }
-        logger.info(msg);
-
-        logger.info("Initial state of the board\n");
-        printBoard();
-
-        logger.info("Removing pin at position 0\n");
-        Move move = new Move(0, 0, 0);
-        applyMove(move);
-        printBoard();
-
-        logger.info("Making move from 3 to 0 removing 1.");
-        move = new Move(3, 0, 1);
-        applyMove(move);
-        printBoard();
-
-        logger.info("Reversing both moves.");
-        reverseMove(move);
-        printBoard();
-        move = new Move(0, 0, 0);
-        reverseMove(move);
-        printBoard();
-
-        /*
-         * Testing Jumping Methods
-         */
-        logger.info("************************\n" +
-                    "Testing jumping methods.\n" +
-                    "************************\n");
-        Move valid;
-        Move blocked;
-        Move invalid;
-
-        /*
-         * Testing Upper Right Move
-         *
-         * ((R, D), (R - 2, D), (R - 1, D)
-         */
-        logger.info("**************************\n" +
-                "Testing Upper Right Moves\n" +
-                "**************************\n");
-        move = new Move(2, 2, 2);
-        applyMove(move);
-        logger.info("Initial board");
-        printBoard();
-
-        valid = new Move(7, 2, 4);
-        blocked = new Move(3, 0, 1);
-        invalid = new Move(1, -1, 0);
-        testMoveCombinations(valid, blocked, invalid);
-
-        move = new Move(2, 2, 2);
-        reverseMove(move);
-
-        /*
-         * Testing Right Moves
-         */
-        logger.info("*********************\n" +
-                    "Testing Right Moves.\n" +
-                    "*********************\n");
-        move = new Move(9, 9, 9);
-        applyMove(move);
-        logger.info("Initial board");
-        printBoard();
-
-        valid = new Move(7, 9, 8);
-        blocked = new Move(3, 5, 4);
-        invalid = new Move(1, -1, 2);
-        testMoveCombinations(valid, blocked, invalid);
-
-        move = new Move(9, 9, 9);
-        reverseMove(move);
-
-        /*
-         * Testing Lower Right Moves
-         */
-        logger.info("**************************\n" +
-                    "Testing Lower Right Moves.\n" +
-                    "**************************\n");
-        move = new Move(8, 8, 8);
-        applyMove(move);
-        logger.info("Initial board");
-        printBoard();
-
-        valid = new Move(4, 8, 13);
-        blocked = new Move(2, 9, 5);
-        invalid = new Move(8, 19, 13);
-        testMoveCombinations(valid, blocked, invalid);
-
-        move = new Move(8, 8, 8);
-        reverseMove(move);
-
-        /*
-         * Testing Lower Left Moves
-         */
-        logger.info("*************************\n" +
-                    "Testing Lower Left Moves.\n" +
-                    "*************************\n");
-        move = new Move(12, 12, 12);
-        applyMove(move);
-        logger.info("Initial board");
-        printBoard();
-
-        valid = new Move(5, 12, 8);
-        blocked = new Move(2, 7, 4);
-        invalid = new Move(8, 17, 12);
-        testMoveCombinations(valid, blocked, invalid);
-
-        move = new Move(12, 12, 12);
-        reverseMove(move);
-
-        /*
-         * Testing Lower Left Moves
-         */
-        logger.info("*******************\n" +
-                    "Testing Left Moves.\n" +
-                    "*******************\n");
-        move = new Move(7, 7, 7);
-        applyMove(move);
-        logger.info("Initial board");
-        printBoard();
-
-        valid = new Move(9, 7, 8);
-        blocked = new Move(5, 3, 4);
-        invalid = new Move(2, 1, 0);
-        testMoveCombinations(valid, blocked, invalid);
-
-        move = new Move(12, 12, 12);
-        reverseMove(move);
-    }
-
-    private void testMoveCombinations(Move valid, Move blocked, Move invalid) {
-        logger.info("Testing move " + valid + " the valid move");
-        logger.info("Valid : " + testMove(valid));
-        logger.info("Testing move " + blocked + " the blocked move");
-        logger.info("Valid : " + testMove(blocked));
-        logger.info("Testing move " + invalid + " the invalid move");
-        logger.info("Valid : " + testMove(invalid));
-    }
-
-    /**
      * Creates the logger for logging the solution.
      */
     private void createLogger() {
@@ -240,29 +88,6 @@ public class PegGame {
         return TOTAL_PEGS_TABLE[row] + displacement;
     }
 
-    private void printBoard() {
-        int totalPrinted = 0;
-        int currentRow = 0;
-        String currentString = "";
-        String totalString = "";
-        int maxStringLength = (2 * (numberOfRows)) - 1;
-        for (; totalPrinted < maxNumberOfPegs ; totalPrinted++) {
-            if (totalPrinted == TOTAL_PEGS_TABLE[currentRow]) {
-                currentRow++;
-                currentString.trim();
-                while (currentString.length() < maxStringLength) {
-                    currentString = " " + currentString + " ";
-                }
-                totalString += currentString + "\n";
-                currentString = "";
-            }
-            currentString =
-                    currentString + " " + (pegBoard[totalPrinted] ? "1" : "0");
-        }
-        totalString += currentString;
-        logger.info(totalString);
-    }
-
     /**
      * Applies the move to the board.
      */
@@ -291,12 +116,15 @@ public class PegGame {
         // TODO Check if the logic here is sound.
         int max = TOTAL_PEGS_TABLE[(numberOfRows / 2) + 1];
         logger.info("PEGS TO CHECK : " + max);
-        for (int i = 0 ; i < max ; i++) {
+        /*for (int i = 0 ; i < max ; i++) {
             Move move = new Move(i, i, i);
             applyMove(move);
             logger.info("Checking : " + i);
             recursiveSolve(move);
-        }
+        }*/
+        Move move = new Move(4, 4, 4);
+        applyMove(move);
+        recursiveSolve(move);
         logger.info("Best Worst Case Scenario\n");
         logger.info("Most Pegs Left : " + currentBest + "\n");
         logger.info(bestMoveString);
@@ -454,12 +282,6 @@ public class PegGame {
     // This program will take in one argument, "-s <int>", which will range from
     // 5 to 10 and this corresponds to the number of rows in the game.
     public static void main(String[] args) {
-        if (args.length == 0) {
-            // TODO Take this out, this will be how we test internal methods.
-            PegGame pegGame = new PegGame(5);
-            pegGame.test();
-            return;
-        }
         int rows = Integer.parseInt(args[0]);
         PegGame pegGame = new PegGame(rows);
         pegGame.solve();
