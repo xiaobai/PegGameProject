@@ -116,15 +116,12 @@ public class PegGame {
         // TODO Check if the logic here is sound.
         int max = TOTAL_PEGS_TABLE[(numberOfRows / 2) + 1];
         logger.info("PEGS TO CHECK : " + max);
-        /*for (int i = 0 ; i < max ; i++) {
+        for (int i = 0 ; i < max ; i++) {
             Move move = new Move(i, i, i);
             applyMove(move);
             logger.info("Checking : " + i);
             recursiveSolve(move);
-        }*/
-        Move move = new Move(4, 4, 4);
-        applyMove(move);
-        recursiveSolve(move);
+        }
         logger.info("Best Worst Case Scenario\n");
         logger.info("Most Pegs Left : " + currentBest + "\n");
         logger.info(bestMoveString);

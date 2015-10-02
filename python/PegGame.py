@@ -47,7 +47,6 @@ def testAndApply(previousPosition, newPosition, removePosition, board, pegsLeft,
         board[previousPosition] = False
         board[newPosition] = True
         board[removePosition] = False
-        print "Making move : " + str(previousPosition) + ", " + str(newPosition)
         recursiveSolve(previousPosition, newPosition, removePosition, board, pegsLeft - 1, pegsTotal, rows, best)
         board[previousPosition] = True
         board[newPosition] = False
@@ -110,6 +109,7 @@ def printBoard(board, rows, maxNumberOfPegs):
 
 def recursiveSolve(previousPosition, newPosition, removePosition, board, pegsLeft, pegsTotal, rows, best):
     global bestSolution
+    print pegsLeft
     if (pegsLeft > bestSolution):
         validMove = False
         i = 0
@@ -124,7 +124,13 @@ def recursiveSolve(previousPosition, newPosition, removePosition, board, pegsLef
 
 def solve(board, rows, pegsTotal):
     TOTAL_PEGS_TABLE = [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153]
-    # TODO Implement
+    i = 0
+    while (i < pegsTotal):
+        print "I : " + str(i)
+        board[i] = False
+        recursiveSolve(i, i, i, board, pegsTotal - 1, pegsTotal, rows, 0)
+        board[i] = True
+        i = i + 1
     return
 
 rows = 5
@@ -134,6 +140,5 @@ board = []
 while (i < 15):
     board.append(True)
     i = i + 1
-board[4] = False
-recursiveSolve(4, 4, 4, board, 14, 15, 5, 0)
+solve(board, rows, 15)
 print bestSolution
