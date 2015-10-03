@@ -124,7 +124,6 @@ def solve(board, rows, pegsTotal, moves):
         board[i] = False
         recursiveSolve(board, pegsTotal - 1, pegsTotal, rows, moves)
         board[i] = True
-        i += 1
     return
 # --- Correct ---
 
