@@ -5,6 +5,7 @@ import sys
 bestSolution = 0
 bestMoves = []
 numberOfCalls = 0
+initialPeg = 0
 TOTAL_PEGS_TABLE = [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153]
 
 # Used to get the row that corresponds to a peg number given.
@@ -14,14 +15,12 @@ def getRow(pegNumber):
     while (TOTAL_PEGS_TABLE[i] <= pegNumber):
         i += 1
     return i
-# --- Correct ---
 
 
 # Used to get the displacement that corresponds to a peg number given.
 # Start counting pegs at 0, ends at row - 1
 def getDisplacement(pegNumber):
     return pegNumber - TOTAL_PEGS_TABLE[getRow(pegNumber) - 1]
-# --- Correct --- 
 
 # Used to get a peg number that corresponds to a row and displacement.
 # Start counting at 0, ends at TOTAL_PEGS_TABLE[rows]
@@ -29,7 +28,6 @@ def getPegNumber(row, displacement):
     if (row < 1 or row > len(TOTAL_PEGS_TABLE) or displacement < 0 or displacement >= row):
         return -1
     return TOTAL_PEGS_TABLE[row - 1] + displacement
-# --- Correct ---
 
 # Tests whether a move is valid or not based on the following criteria:
 #
@@ -48,7 +46,6 @@ def testMove(previousPosition, newPosition, removePosition, board, rows):
     if ((1 <= lR <= rows) and (0 <= lD < lR)):
         return (board[previousPosition] and (not board[newPosition]) and board[removePosition])
     return False
-# --- Correct ---
 
 # Applies a move to the board
 def applyMove(previousPosition, newPosition, removePosition, board, moves):
@@ -56,7 +53,6 @@ def applyMove(previousPosition, newPosition, removePosition, board, moves):
     board[newPosition] = True
     board[removePosition] = False
     moves.append((previousPosition,newPosition))
-# --- Correct ---
 
 # Reverses a move on the board
 def reverseMove(previousPosition, newPosition, removePosition, board, moves):
@@ -64,8 +60,8 @@ def reverseMove(previousPosition, newPosition, removePosition, board, moves):
     board[newPosition] = False
     board[removePosition] = True
     moves.pop()
-# --- Correct ---
 
+# Applies a move, tests the move among, and then reverses the move
 def testAndApply(previousPosition, newPosition, removePosition, board, pegsLeft, pegsTotal, rows, moves):
     if testMove(previousPosition, newPosition, removePosition, board, rows):
         applyMove(previousPosition, newPosition, removePosition, board, moves)
@@ -73,10 +69,9 @@ def testAndApply(previousPosition, newPosition, removePosition, board, pegsLeft,
         reverseMove(previousPosition, newPosition, removePosition, board, moves)
         return True
     return False
-# --- Correct ---
 
-# This tests all 6 possible moves to see if any are possible and if so then it
-# will call recursiveSolve using the move after applying the move.
+# This tests all 6 possible moves to see if any are possible. If so, it will
+# test the move and see what happens.
 def testNeighborMoves(currentPeg, board, pegsLeft, pegsTotal, rows, moves):
     validMove = False
     # TODO Implement
@@ -108,25 +103,6 @@ def testNeighborMoves(currentPeg, board, pegsLeft, pegsTotal, rows, moves):
     validMove = validMove or testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
     return validMove
 
-#def printBoard(board, rows, maxNumberOfPegs):
-#    totalPrinted = 0
-#    currentRow = 0
-#    currentString = ""
-#    totalString = ""
-#    maxStringLength = (2 * (rows)) - 1
-#    while (totalPrinted < maxNumberOfPegs):
-#        if (totalPrinted == TOTAL_PEGS_TABLE[currentRow]):
-#            currentRow = currentRow + 1
-#            while (len(currentString) < maxStringLength):
-#                currentString = " " + currentString + " "
-#            totalString = totalString + currentString + "\n"
-#            currentString= ""
-#        currentString = currentString + " " + ("1" if board[totalPrinted] else "0")
-#        totalPrinted = totalPrinted + 1
-#    totalString = totalString + currentString
-#    print totalString
-#    return
-
 def recursiveSolve(board, pegsLeft, pegsTotal, rows, moves):
     global bestSolution
     global bestMoves
@@ -141,12 +117,10 @@ def recursiveSolve(board, pegsLeft, pegsTotal, rows, moves):
             for m in moves:
                 bestMoves.append(m)
     return
-# --- Correct ---
 
 def solve(board, rows, pegsTotal, moves):
     i = 0
-    while (i < pegsTotal):
-        #print "I : " + str(i)
+    for i in range(0, pegsTotal):
         board[i] = False
         recursiveSolve(board, pegsTotal - 1, pegsTotal, rows, moves)
         board[i] = True
@@ -168,15 +142,14 @@ def isInteger(a):
 
 if __name__ == '__main__':
     if len(sys.argv) is not 3:
-        print "Incorrect amount of arguments."
+        print "Error: Incorrect amount of arguments."
         usage()
         sys.exit()
 
     flag = sys.argv[1]
     rows = sys.argv[2]
     if (flag != "-s") or (not isInteger(rows)) or not (5 <= int(rows) <= 10):
-        print flag
-        print rows
+        print "Error: Incorrect arguments"
         usage()
         sys.exit()
 
