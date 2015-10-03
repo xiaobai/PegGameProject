@@ -80,7 +80,7 @@ def testAndApply(previousPosition, newPosition, removePosition, board, pegsLeft,
 def testNeighborMoves(currentPeg, board, pegsLeft, pegsTotal, rows, moves):
     validMove = False
     # TODO Implement
-    r = getRow(currentPeg) - 1
+    r = getRow(currentPeg)
     d = getDisplacement(currentPeg)
 
     land = getPegNumber(r - 2, d)
@@ -130,7 +130,6 @@ def testNeighborMoves(currentPeg, board, pegsLeft, pegsTotal, rows, moves):
 def recursiveSolve(board, pegsLeft, pegsTotal, rows, moves):
     global bestSolution
     global bestMoves
-    print pegsLeft
     if (pegsLeft > bestSolution):
         validMove = False
         for i in range(0, pegsTotal):
@@ -147,7 +146,7 @@ def recursiveSolve(board, pegsLeft, pegsTotal, rows, moves):
 def solve(board, rows, pegsTotal, moves):
     i = 0
     while (i < pegsTotal):
-        print "I : " + str(i)
+        #print "I : " + str(i)
         board[i] = False
         recursiveSolve(board, pegsTotal - 1, pegsTotal, rows, moves)
         board[i] = True
