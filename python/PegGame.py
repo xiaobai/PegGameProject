@@ -62,56 +62,58 @@ def reverseMove(previousPosition, newPosition, removePosition, board, moves):
     moves.pop()
 
 # Applies a move, tests the move among, and then reverses the move
-def testAndApply(previousPosition, newPosition, removePosition, board, pegsLeft, pegsTotal, rows, moves):
+def testAndApply(previousPosition, newPosition, removePosition, board, pegsLeft, pegsTotal, rows, moves, pegMissing):
     if testMove(previousPosition, newPosition, removePosition, board, rows):
         applyMove(previousPosition, newPosition, removePosition, board, moves)
-        recursiveSolve(board, pegsLeft - 1, pegsTotal, rows, moves)
+        recursiveSolve(board, pegsLeft - 1, pegsTotal, rows, moves, pegMissing)
         reverseMove(previousPosition, newPosition, removePosition, board, moves)
         return True
     return False
 
 # This tests all 6 possible moves to see if any are possible. If so, it will
 # test the move and see what happens.
-def testNeighborMoves(currentPeg, board, pegsLeft, pegsTotal, rows, moves):
+def testNeighborMoves(currentPeg, board, pegsLeft, pegsTotal, rows, moves, pegMissing):
     validMove = False
     r = getRow(currentPeg)
     d = getDisplacement(currentPeg)
 
     land = getPegNumber(r - 2, d)
     jump = getPegNumber(r - 1, d)
-    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves, pegMissing)
     
     land = getPegNumber(r, d + 2)
     jump = getPegNumber(r, d + 1)
-    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves, pegMissing)
 
     land = getPegNumber(r + 2, d + 2)
     jump = getPegNumber(r + 1, d + 1)
-    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves, pegMissing)
 
     land = getPegNumber(r + 2, d)
     jump = getPegNumber(r + 1, d)
-    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves, pegMissing)
 
     land = getPegNumber(r, d - 2)
     jump = getPegNumber(r, d - 1)
-    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves, pegMissing)
 
     land = getPegNumber(r - 2, d - 2)
     jump = getPegNumber(r - 1, d - 1)
-    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves, pegMissing)
     return validMove
 
-def recursiveSolve(board, pegsLeft, pegsTotal, rows, moves):
+def recursiveSolve(board, pegsLeft, pegsTotal, rows, moves, pegMissing):
     global bestSolution
     global bestMoves
+    global initialPeg
     if (pegsLeft > bestSolution):
         validMove = False
         for i in range(0, pegsTotal):
             if (board[i]):
-                validMove |= testNeighborMoves(i, board, pegsLeft, pegsTotal, rows, moves)
+                validMove |= testNeighborMoves(i, board, pegsLeft, pegsTotal, rows, moves, pegMissing)
         if (not validMove):
             bestSolution = pegsLeft
+            initialPeg = pegMissing
             bestMoves = []
             for m in moves:
                 bestMoves.append(m)
@@ -121,7 +123,7 @@ def solve(board, rows, pegsTotal, moves):
     i = 0
     for i in range(0, pegsTotal):
         board[i] = False
-        recursiveSolve(board, pegsTotal - 1, pegsTotal, rows, moves)
+        recursiveSolve(board, pegsTotal - 1, pegsTotal, rows, moves, i)
         board[i] = True
     return
 
@@ -161,6 +163,6 @@ if __name__ == '__main__':
         i += 1
 
     solve(board, rows, TOTAL_PEGS_TABLE[rows], moves)
-    print bestSolution
+    print "(" + str(bestSolution) + ", " + str(initialPeg + 1) + ")"
     for m in bestMoves:
         print m
