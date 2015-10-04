@@ -240,27 +240,27 @@ testNeighborMoves(CurrentPeg, Board, Rows, TotalPegs, MoveList, ResultList, IsVa
 
     getPegNumber(R - 2, D - 2, T0RIndex),
     getPegNumber(R - 1, D - 1, T0NIndex),
-    testAndApply(CurrentPeg, T0NIndex, T0RIndex, Board, Rows, TotalPegs, MoveList, T0List, T0Validity),
+    testAndApply(CurrentPeg, T0RIndex, T0NIndex, Board, Rows, TotalPegs, MoveList, T0List, T0Validity),
 
     getPegNumber(R - 2, D, T1RIndex),
     getPegNumber(R - 1, D, T1NIndex),
-    testAndApply(CurrentPeg, T1NIndex, T1RIndex, Board, Rows, TotalPegs, MoveList, T1List, T1Validity),
+    testAndApply(CurrentPeg, T1RIndex, T1NIndex, Board, Rows, TotalPegs, MoveList, T1List, T1Validity),
 
     getPegNumber(R, D + 2, T2RIndex),
     getPegNumber(R, D + 1, T2NIndex),
-    testAndApply(CurrentPeg, T2NIndex, T2RIndex, Board, Rows, TotalPegs, MoveList, T2List, T2Validity),
+    testAndApply(CurrentPeg, T2RIndex, T2NIndex, Board, Rows, TotalPegs, MoveList, T2List, T2Validity),
 
     getPegNumber(R + 2, D + 2, T3RIndex),
     getPegNumber(R + 1, D + 1, T3NIndex),
-    testAndApply(CurrentPeg, T3NIndex, T3RIndex, Board, Rows, TotalPegs, MoveList, T3List, T3Validity),
+    testAndApply(CurrentPeg, T3RIndex, T3NIndex, Board, Rows, TotalPegs, MoveList, T3List, T3Validity),
 
     getPegNumber(R + 2, D, T4RIndex),
     getPegNumber(R + 1, D, T4NIndex),
-    testAndApply(CurrentPeg, T4NIndex, T4RIndex, Board, Rows, TotalPegs, MoveList, T4List, T4Validity),
+    testAndApply(CurrentPeg, T4RIndex, T4NIndex, Board, Rows, TotalPegs, MoveList, T4List, T4Validity),
 
     getPegNumber(R, D - 2, T5RIndex),
     getPegNumber(R, D - 1, T5NIndex),
-    testAndApply(CurrentPeg, T5NIndex, T5RIndex, Board, Rows, TotalPegs, MoveList, T5List, T5Validity),
+    testAndApply(CurrentPeg, T5RIndex, T5NIndex, Board, Rows, TotalPegs, MoveList, T5List, T5Validity),
 
     getBestList([T0List, T1List, T2List, T3List, T4List, T5List], [T0Validity, T1Validity, T2Validity, T3Validity, T4Validity, T5Validity], [], ResultList),
     (ResultList == [] -> IsValid = false ; IsValid = true).
