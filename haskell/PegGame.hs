@@ -1,11 +1,13 @@
 import Debug.Trace
 -- Each value in this array corresponds to the total number of pegs up to and including that row.
 totalPegsTable = [0,1,3,6,10,15,21,28,36,45,55,66,78,91,105,120,136,153]
+slice :: Int -> Int -> [a] -> [a]
+slice from to xs = take (to - from + 1) (drop from xs)
 
 -----------------------------------------------
 -- Returns the shortest list in a list of lists.
 -- l - the list of lists.
--- b - the longest list currently
+-- b - the shortest list currently
 -----------------------------------------------
 getShortestList:: [[(Int, Int)]] -> [(Int, Int)] ->[(Int, Int)]
 getShortestList l b =
@@ -174,5 +176,16 @@ recursiveSolve board rows totalPegs moveList =
 {-solve:: Int -> [(Int, Int)]-}
 solve n =
     do
-        let arr = recursiveSolve [True, True, True, True, False, True, True, True, True, True, True, True, True, True, True] 5 15 [(4,4)]
-        ((length arr), arr)
+        let numOfPegs = totalPegsTable !! n
+        let fullBoard = [ True | _ <- [1..numOfPegs] ]
+        let listOfBoards = [[False] ++ [ True | _ <- [2..numOfPegs]]] ++ [ slice 0 (i-1) fullBoard ++ [False] ++ slice (i+1) numOfPegs fullBoard | i <- [1..(numOfPegs-1)]]
+        let arr = [ recursiveSolve (listOfBoards !! i) n numOfPegs [(i,i)] | i <- [0..(quot (numOfPegs-1) 2)] ]
+        getShortestList arr []
+
+
+showMoves :: (Int, Int) -> String
+showMoves (a, b) = "(" ++ show a ++ ", " ++ show b ++ ")"
+
+main = do
+    let moves = solve 5
+    putStrLn (unlines (map showMoves moves))
