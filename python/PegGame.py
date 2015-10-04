@@ -163,6 +163,6 @@ if __name__ == '__main__':
         i += 1
 
     solve(board, rows, TOTAL_PEGS_TABLE[rows], moves)
-    print "(" + str(bestSolution) + ", " + str(initialPeg + 1) + ")"
+    print "(" + str(bestSolution) + ", " + str(initialPeg) + ")"
     for m in bestMoves:
         print m

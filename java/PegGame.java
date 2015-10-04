@@ -57,7 +57,6 @@ public class PegGame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        logger.info("Created the logger");
     }
 
     /**
@@ -115,16 +114,14 @@ public class PegGame {
     public void solve() {
         // TODO Check if the logic here is sound.
         int max = TOTAL_PEGS_TABLE[(numberOfRows / 2) + 1];
-        logger.info("PEGS TO CHECK : " + max);
         for (int i = 0 ; i < max ; i++) {
             Move move = new Move(i, i, i);
             applyMove(move);
-            logger.info("Checking : " + i);
             recursiveSolve(move);
         }
-        logger.info("Best Worst Case Scenario\n");
-        logger.info("Most Pegs Left : " + currentBest + "\n");
-        logger.info(bestMoveString);
+        System.out.println("(" + currentBest + ", " + bestMoveString.charAt(1) + ")");
+        //logger.info(bestMoveString);
+        System.out.println(bestMoveString);
     }
 
     public void recursiveSolve(Move previousMove) {
