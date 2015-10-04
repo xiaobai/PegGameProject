@@ -57,7 +57,6 @@ public class PegGame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        logger.info("Created the logger");
     }
 
     /**
@@ -115,16 +114,14 @@ public class PegGame {
     public void solve() {
         // TODO Check if the logic here is sound.
         int max = TOTAL_PEGS_TABLE[(numberOfRows / 2) + 1];
-        logger.info("PEGS TO CHECK : " + max);
         for (int i = 0 ; i < max ; i++) {
             Move move = new Move(i, i, i);
             applyMove(move);
-            logger.info("Checking : " + i);
             recursiveSolve(move);
         }
-        logger.info("Best Worst Case Scenario\n");
-        logger.info("Most Pegs Left : " + currentBest + "\n");
-        logger.info(bestMoveString);
+        System.out.println("(" + currentBest + ", " + bestMoveString.charAt(1) + ")");
+        //logger.info(bestMoveString);
+        System.out.println(bestMoveString);
     }
 
     public void recursiveSolve(Move previousMove) {
@@ -159,7 +156,7 @@ public class PegGame {
                 Iterator<Move> iterator = moveStack.iterator();
                 bestMoveString = "";
                 while (iterator.hasNext()) {
-                    bestMoveString = iterator.next() + "\n" + bestMoveString;
+                    bestMoveString = bestMoveString + iterator.next() + "\n";
                 }
             }
         }
@@ -276,10 +273,38 @@ public class PegGame {
         return false;
     }
 
+    /**
+     * Prints the usage for when the user supplies incorrect arguments.
+     */
+    public static void usage() {
+        System.out.println("Usage: java PegGame -s <rows>");
+        System.out.println("rows should be an integer between 5 and 10, inclusive");
+    }
+
     // This program will take in one argument, "-s <int>", which will range from
     // 5 to 10 and this corresponds to the number of rows in the game.
     public static void main(String[] args) {
-        int rows = Integer.parseInt(args[0]);
+        if (args.length != 2) {
+                System.out.println("Error: Incorrect amount of arguments");
+                usage();
+                System.exit(0);
+        }
+
+        int rows = 0;
+        try {
+            rows = Integer.parseInt(args[1]);
+        } catch (NumberFormatException nfe) {
+            System.out.println("Error: Expected -s arg to be an integer");
+            usage();
+            System.exit(0);
+        }
+
+        if (!(args[0].equals("-s")) || (rows < 5) || (rows > 10)) {
+            System.out.println("Error: Invalid arguments");
+            usage();
+            System.exit(0);
+        }
+
         PegGame pegGame = new PegGame(rows);
         pegGame.solve();
     }
