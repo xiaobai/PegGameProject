@@ -38,4 +38,68 @@ getRowHelper(PegNumber, List, Index, Result) :-
 getRowHelper(PegNumber, List, Index, Result) :-
     [ListHead | RestList] = List,
     ListHead > PegNumber,
-    Result is Index.
+    Result is (Index - 1).
+
+/**
+ * This gets the displacement from the beginning of the row.
+ * PegNumber - the peg we are getting the displacement for.
+ * Result - the displacement that we are binding to.
+ */
+getDisplacement(PegNumber, Result) :-
+    getRow(PegNumber, RowNumber),
+    TotalPegsList = [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153],
+    nth0(RowNumber, TotalPegsList, TotalPegs),
+    Result is (PegNumber - TotalPegs).
+
+getPegNumber(Row, Displacement, Result) :-
+    (Row < 0 ; Row > 13 ; Displacement < 0 ; Displacement > Row),
+    Result is -1.
+
+/**
+ * Gets the peg number for the given row and displacement.
+ * Row - the row of the peg.
+ * Displacement - the displacement of the peg.
+ * Result - the peg number that we will bind to.
+ */
+getPegNumber(Row, Displacement, Result) :-
+    Row >= 0,
+    Row =< 13,
+    Displacement >= 0,
+    Displacement =< Row,
+    TotalPegsList = [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153],
+    nth0(Row, TotalPegsList, TotalPegs),
+    Result is (TotalPegs + Displacement).
+
+/**
+ * Tests whether a move is valid or not. This case is specifically not valid, when the land row is not between 0 and the number of rows.
+ * OIndex - the original peg index.
+ * NIndex - the new peg index.
+ * JIndex - the peg that we are jumping.
+ * NumberOfRows - the number of rows in the board.
+ * Board - the list of true/fail values.
+ * Result - what we will bind the true/fail value to.
+ */
+testMove(OIndex, NIndex, JIndex, NumberOfRows, Board, Result) :-
+    getRow(NIndex, LR),
+    (LR < 0 ; LR >= NumberOfRows),
+    Result is fail.
+
+testMove(OIndex, NIndex, JIndex, NumberOfRows, Board, Result) :-
+    getRow(NIndex, LR),
+    (LR >= 0 ; LR < NumberOfRows),
+    getDisplacement(NIndex, LD),
+    (0 > LR ; LR > (NumberOfRows - 1) ; 0 > LD ; LD > LR),
+    Result is fail.
+
+testMove(OIndex, NIndex, JIndex, NumberOfRows, Board, Result) :-
+    getRow(NIndex, LR),
+    (LR >= 0 ; LR < NumberOfRows),
+    getDisplacement(NIndex, LD),
+    0 =< LR,
+    LR =< (NumberOfRows - 1),
+    0 =< LD,
+    LD =< LR,
+    nth0(OIndex, Board, OVal),
+    nth0(NIndex, Board, NVal),
+    nth0(JIndex, Board, JVal),
+    Result is (OVal ; NVal ; JVal).
