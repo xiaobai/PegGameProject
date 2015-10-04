@@ -4,6 +4,38 @@
  */
 
 /**
+ * The operations below on basic boolean logic are taken from:
+ * http://kti.ms.mff.cuni.cz/~bartak/prolog/booleans.html
+ */
+
+/** Logical And **/
+and_d(true, false, false).
+and_d(true, true, true).
+and_d(false, true, false).
+and_d(false, false, false).
+
+/** Logical Or **/
+or_d(true, false, true).
+or_d(true, true, true).
+or_d(false, true, true).
+or_d(false, false, false).
+
+/** Logical NOT **/
+non_d(false, true).
+non_d(true, false).
+
+eval_b(X, X) :- logic_const(X).
+
+/**
+ * Logic constant definitions.
+ */
+logic_const(true).
+logic_const(false).
+
+append([],X,X).
+append([X|Y],Z,[X|W]) :- append(Y,Z,W).
+
+/**
  * Returns the corresponding row for the given peg.
  * PegNumber - the peg that we are getting the row for.
  * Result - the value we will bind the row to.
@@ -71,27 +103,21 @@ getPegNumber(Row, Displacement, Result) :-
     Result is (TotalPegs + Displacement).
 
 /**
- * Tests whether a move is valid or not. This case is specifically not valid, when the land row is not between 0 and the number of rows.
+ * Tests whether a move is valid or not based on the following conditions:
+ * 
+ * 1) 0 <= Land Row <= Max Number Of Rows - 1
+ * 2) 0 <= Land Displacement <= Land Row
+ * 3) Land Position must be vacant
+ * 4) Jump Position must be occupied
+ * 5) Peg Position must be occupied
+ *
  * OIndex - the original peg index.
  * NIndex - the new peg index.
  * JIndex - the peg that we are jumping.
  * NumberOfRows - the number of rows in the board.
  * Board - the list of true/fail values.
- * Result - what we will bind the true/fail value to.
  */
-testMove(OIndex, NIndex, JIndex, NumberOfRows, Board, Result) :-
-    getRow(NIndex, LR),
-    (LR < 0 ; LR >= NumberOfRows),
-    Result is fail.
-
-testMove(OIndex, NIndex, JIndex, NumberOfRows, Board, Result) :-
-    getRow(NIndex, LR),
-    (LR >= 0 ; LR < NumberOfRows),
-    getDisplacement(NIndex, LD),
-    (0 > LR ; LR > (NumberOfRows - 1) ; 0 > LD ; LD > LR),
-    Result is fail.
-
-testMove(OIndex, NIndex, JIndex, NumberOfRows, Board, Result) :-
+testMove(OIndex, NIndex, JIndex, NumberOfRows, Board) :-
     getRow(NIndex, LR),
     (LR >= 0 ; LR < NumberOfRows),
     getDisplacement(NIndex, LD),
@@ -102,4 +128,42 @@ testMove(OIndex, NIndex, JIndex, NumberOfRows, Board, Result) :-
     nth0(OIndex, Board, OVal),
     nth0(NIndex, Board, NVal),
     nth0(JIndex, Board, JVal),
-    Result is (OVal ; NVal ; JVal).
+    OVal,
+    not(NVal),
+    JVal.
+
+/**
+ * Tests to see if a move is valid, this is the case where it is valid.
+ * Since the move is valid we append the move list and return the recursive call.
+ * TODO DO THE RECURSIVE CALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * OIndex - the peg number of the peg in question.
+ * NIndex - the peg number of the index we are jumping to.
+ * RIndex - the peg number of the peg we are jumping.
+ * Board - the board that contains the pegs.
+ * Rows - the number of rows in the board.
+ * TotalPegs - the total number of pegs in the board.
+ * MoveList - the list of moves already made.
+ * ResultMoveList - the resultant move list.
+ * ResultValidity - whether or not the move was valid.
+ */
+testAndApply(OIndex, NIndex, RIndex, Board, Rows, TotalPegs, MoveList, ResultMoveList, ResultValidity) :-
+    testMove(OIndex, NIndex, RIndex, Rows, Board),
+    append(MoveList,[(OIndex, RIndex)], ResultMoveList),
+    ResultValidity = true.
+
+/**
+ * Tests to see if a move is valid, this is the case where it isn't valid and we return false.
+ * OIndex - the peg number of the peg in question.
+ * NIndex - the peg number of the index we are jumping to.
+ * RIndex - the peg number of the peg we are jumping.
+ * Board - the board that contains the pegs.
+ * Rows - the number of rows in the board.
+ * TotalPegs - the total number of pegs in the board.
+ * MoveList - the list of moves already made.
+ * ResultMoveList - the resultant move list.
+ * ResultValidity - whether or not the move was valid.
+ */
+testAndApply(OIndex, NIndex, RIndex, Board, Rows, TotalPegs, MoveList, ResultMoveList, ResultValidity) :-
+    \+ testMove(OIndex, NIndex, RIndex, Rows, Board),
+    ResultMoveList = MoveList,
+    ResultValidity = false.
