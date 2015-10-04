@@ -36,6 +36,32 @@ append([],X,X).
 append([X|Y],Z,[X|W]) :- append(Y,Z,W).
 
 /**
+ * Creates an initial list with the given index as false, and the rest as true, this is the return case.
+ * NumberMade - the current index we are on.
+ * Max - the number of pegs we need.
+ * IndexOfFirstMove - the peg we are removing.
+ * Board - the curret board being made.
+ * Result - where we will bind the completed board.
+ */
+createInitialList(NumberMade, Max, IndexOfFirstMove, Board, Result) :-
+    NumberMade >= Max,
+    Result = Board.
+
+/**
+ * Creates an initial list with the given index as false, and the rest as true, this is recursive case when we still have more to do.
+ * NumberMade - the current index we are on.
+ * Max - the number of pegs we need.
+ * IndexOfFirstMove - the peg we are removing.
+ * Board - the curret board being made.
+ * Result - where we will bind the completed board.
+ */
+createInitialList(NumberMade, Max, IndexOfFirstMove, Board, Result) :-
+    NumberMade < Max,
+    (NumberMade == IndexOfFirstMove -> append(Board, [false], NewBoard) ; append(Board, [true], NewBoard)),
+    NumberMade0 is NumberMade + 1,
+    createInitialList(NumberMade0, Max, IndexOfFirstMove, NewBoard, Result).
+
+/**
  * Returns the corresponding row for the given peg.
  * PegNumber - the peg that we are getting the row for.
  * Result - the value we will bind the row to.
@@ -149,6 +175,7 @@ testMove(OIndex, NIndex, JIndex, NumberOfRows, Board) :-
 testAndApply(OIndex, NIndex, RIndex, Board, Rows, TotalPegs, MoveList, ResultMoveList, ResultValidity) :-
     testMove(OIndex, NIndex, RIndex, Rows, Board),
     append(MoveList,[(OIndex, RIndex)], ResultMoveList),
+    /** TODO Make a recursive call here. **/
     ResultValidity = true.
 
 /**
@@ -167,3 +194,64 @@ testAndApply(OIndex, NIndex, RIndex, Board, Rows, TotalPegs, MoveList, ResultMov
     \+ testMove(OIndex, NIndex, RIndex, Rows, Board),
     ResultMoveList = MoveList,
     ResultValidity = false.
+
+
+/**
+ * Recursively solves a board.
+ * Board - the current board of pegs.
+ * Rows - the number of rows in the board.
+ * TotalPegs - the total number of pegs in the board.
+ * MoveList - the list of moves that have been done.
+ * ResultList - the resulting list of moves that we will bind to.
+ * ResultLength - the resulting length of the list of moves.
+ */
+recursiveSolve(Board, Rows, TotalPegs, MoveList, ResultList, ResultLength) :-
+    ResultList = [(1,2)],
+    ResultLength = 1.
+
+/**
+ * This solves a board for a specific initial peg, in this case we are done looking through all pegs.
+ * Rows - the number of rows in the board.
+ * NumberOfPegs - the number of pegs in the board.
+ * Index - the current peg we start by removing.
+ * CurrentBestList - the current best move list in the chain.
+ * CurrentBestNumber - the current best size of the move list.
+ * ResultMoveList - where we will bind the best move list.
+ * ResultNumber - where we will bind the size of the move list.
+ */
+solveInitial(Rows, NumberOfPegs, Index, CurrentBestList, CurrentBestNumber, ResultMoveList, ResultNumber) :-
+    Index >= NumberOfPegs,
+    ResultMoveList = CurrentBestList,
+    ResultNumber = CurrentBestNumber.
+
+/**
+ * This solves a board for a specific initial peg, in this case we haven't looked through all pegs and so we can keep going.
+ * Rows - the number of rows in the board.
+ * NumberOfPegs - the number of pegs in the board.
+ * Index - the current peg we start by removing.
+ * CurrentBestList - the current best move list in the chain.
+ * CurrentBestNumber - the current best size of the move list.
+ * ResultMoveList - where we will bind the best move list.
+ * ResultNumber - where we will bind the size of the move list.
+ */
+solveInitial(Rows, NumberOfPegs, Index, CurrentBestList, CurrentBestNumber, ResultMoveList, ResultNumber) :-
+    Index < NumberOfPegs,
+    createInitialList(0, NumberOfPegs, Index, [], IBoard),
+    recursiveSolve(IBoard, Rows, NumberOfPegs, [(Index, Index)], RecursiveList, RecursiveLength),
+    Index0 is (Index + 1),
+    (RecursiveLength < CurrentBestNumber ->
+        solveInitial(Rows, NumberOfPegs, Index0, RecursiveList, RecursiveLength, ResultMoveList, ResultNumber)
+        ;
+        solveInitial(Rows, NumberOfPegs, Index0, CurrentBestList, CurrentBestNumber, ResultMoveList, ResultNumber)
+    ).
+
+/**
+ * Solves a peg game board for the most pegs left with no available moves.
+ * Rows - the number of rows in the board.
+ * NumberOfMoves - the number of moves it takes, we will bind to this.
+ * MoveList - the moves in list form, we will bind to this.
+ */
+solve(Rows, NumberOfMoves, MoveList) :-
+    TotalPegsList = [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153],
+    nth0(Rows, TotalPegsList, NumberOfPegs),
+    solveInitial(Rows, NumberOfPegs, 0, [], NumberOfPegs, NumberOfMoves, MoveList).
