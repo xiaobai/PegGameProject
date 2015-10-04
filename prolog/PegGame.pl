@@ -265,7 +265,22 @@ testNeighborMoves(CurrentPeg, Board, Rows, TotalPegs, MoveList, ResultList, IsVa
     getBestList([T0List, T1List, T2List, T3List, T4List, T5List], [T0Validity, T1Validity, T2Validity, T3Validity, T4Validity, T5Validity], [], ResultList),
     (ResultList == [] -> IsValid = false ; IsValid = true).
 
-/** TODO FIX THE METHOD BELOW **/
+
+getBestNeighborList(Board, Rows, TotalPegs, MoveList, Index, BestList, BestLength, ResultList, ResultLength) :-
+    Index >= TotalPegs,
+    ResultList = BestList,
+    ResultLength = BestLength.
+
+getBestNeighborList(Board, Rows, TotalPegs, MoveList, Index, BestList, BestLength, ResultList, ResultLength) :-
+    Index < TotalPegs,
+    testNeighborMoves(Index, Board, Rows, TotalPegs, MoveList, CurrentList, IsValid),
+    length(CurrentList, CurrentLength),
+    Index0 is (Index + 1),
+    (IsValid , (CurrentLength < BestLength ; BestList == []) ->
+        getBestNeighborList(Board, Rows, TotalPegs, MoveList, Index0, CurrentList, CurrentLength, ResultList, ResultLength)
+        ;
+        getBestNeighborList(Board, Rows, TotalPegs, MoveList, Index0, BestList, BestLength, ResultList, ResultLength)
+    ).
 
 /**
  * Recursively solves a board.
@@ -277,8 +292,14 @@ testNeighborMoves(CurrentPeg, Board, Rows, TotalPegs, MoveList, ResultList, IsVa
  * ResultLength - the resulting length of the list of moves.
  */
 recursiveSolve(Board, Rows, TotalPegs, MoveList, ResultList, ResultLength) :-
-    ResultList = [(1,2)],
-    ResultLength = 1.
+    getBestNeighborList(Board, Rows, TotalPegs, MoveList, 0, [], 0, NeighborList, NeighborLength),
+    (NeighborList == [] ->
+        ResultList = MoveList,
+        length(MoveList, ResultLength)
+        ;
+        ResultList = NeighborList,
+        length(NeighborList, ResultLength)
+    ).
 
 /**
  * This solves a board for a specific initial peg, in this case we are done looking through all pegs.
