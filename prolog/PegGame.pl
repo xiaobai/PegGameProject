@@ -158,6 +158,22 @@ testMove(OIndex, NIndex, JIndex, NumberOfRows, Board) :-
     not(NVal),
     JVal.
 
+makeMove(Board, Index, OIndex, RIndex, JIndex, TotalPegs, CurrentBoard, ResultBoard) :-
+    Index >= TotalPegs,
+    ResultBoard = CurrentBoard.
+
+makeMove(Board, Index, OIndex, RIndex, JIndex, TotalPegs, CurrentBoard, ResultBoard) :-
+    Index < TotalPegs,
+    [BoardHead | BoardTail] = Board,
+    Index0 is (Index + 1),
+    (((Index == JIndex) ; (BoardHead , Index \= OIndex , Index \= RIndex)) ->
+        append(CurrentBoard, [true], NewBoard),
+        makeMove(BoardTail, Index0, OIndex, RIndex, JIndex, TotalPegs, NewBoard, ResultBoard)
+        ;
+        append(CurrentBoard, [false], NewBoard),
+        makeMove(BoardTail, Index0, OIndex, RIndex, JIndex, TotalPegs, NewBoard, ResultBoard)
+    ).
+
 /**
  * Tests to see if a move is valid, this is the case where it is valid.
  * Since the move is valid we append the move list and return the recursive call.
@@ -174,8 +190,9 @@ testMove(OIndex, NIndex, JIndex, NumberOfRows, Board) :-
  */
 testAndApply(OIndex, NIndex, RIndex, Board, Rows, TotalPegs, MoveList, ResultMoveList, ResultValidity) :-
     testMove(OIndex, NIndex, RIndex, Rows, Board),
-    append(MoveList,[(OIndex, RIndex)], ResultMoveList),
-    /** TODO Make a recursive call here. **/
+    append(MoveList,[(OIndex, RIndex)], NewMoveList),
+    makeMove(Board, 0, OIndex, RIndex, JIndex, TotalPegs, [], NewBoard),
+    recursiveSolve(NewBoard, Rows, TotalPegs, NewMoveList, ResultMoveList, ResultLength),
     ResultValidity = true.
 
 /**
@@ -238,28 +255,38 @@ testNeighborMoves(CurrentPeg, Board, Rows, TotalPegs, MoveList, ResultList, IsVa
     getRow(CurrentPeg, R),
     getDisplacement(CurrentPeg, D),
 
-    getPegNumber(R - 2, D - 2, T0RIndex),
-    getPegNumber(R - 1, D - 1, T0NIndex),
+    RM2 is (R - 2),
+    RM1 is (R - 1),
+    RP1 is (R + 1),
+    RP2 is (R + 2),
+
+    DM2 is (D - 2),
+    DM1 is (D - 1),
+    DP1 is (D + 1),
+    DP2 is (D + 2),
+
+    getPegNumber(RM2, DM2, T0RIndex),
+    getPegNumber(RM1, DM1, T0NIndex),
     testAndApply(CurrentPeg, T0RIndex, T0NIndex, Board, Rows, TotalPegs, MoveList, T0List, T0Validity),
 
-    getPegNumber(R - 2, D, T1RIndex),
-    getPegNumber(R - 1, D, T1NIndex),
+    getPegNumber(RM2, D, T1RIndex),
+    getPegNumber(RM1, D, T1NIndex),
     testAndApply(CurrentPeg, T1RIndex, T1NIndex, Board, Rows, TotalPegs, MoveList, T1List, T1Validity),
 
-    getPegNumber(R, D + 2, T2RIndex),
-    getPegNumber(R, D + 1, T2NIndex),
+    getPegNumber(R, DP2, T2RIndex),
+    getPegNumber(R, DP1, T2NIndex),
     testAndApply(CurrentPeg, T2RIndex, T2NIndex, Board, Rows, TotalPegs, MoveList, T2List, T2Validity),
 
-    getPegNumber(R + 2, D + 2, T3RIndex),
-    getPegNumber(R + 1, D + 1, T3NIndex),
+    getPegNumber(RP2, DP2, T3RIndex),
+    getPegNumber(RP1, DP1, T3NIndex),
     testAndApply(CurrentPeg, T3RIndex, T3NIndex, Board, Rows, TotalPegs, MoveList, T3List, T3Validity),
 
-    getPegNumber(R + 2, D, T4RIndex),
-    getPegNumber(R + 1, D, T4NIndex),
+    getPegNumber(RP2, D, T4RIndex),
+    getPegNumber(RP1, D, T4NIndex),
     testAndApply(CurrentPeg, T4RIndex, T4NIndex, Board, Rows, TotalPegs, MoveList, T4List, T4Validity),
 
-    getPegNumber(R, D - 2, T5RIndex),
-    getPegNumber(R, D - 1, T5NIndex),
+    getPegNumber(R, DM2, T5RIndex),
+    getPegNumber(R, DM1, T5NIndex),
     testAndApply(CurrentPeg, T5RIndex, T5NIndex, Board, Rows, TotalPegs, MoveList, T5List, T5Validity),
 
     getBestList([T0List, T1List, T2List, T3List, T4List, T5List], [T0Validity, T1Validity, T2Validity, T3Validity, T4Validity, T5Validity], [], ResultList),
