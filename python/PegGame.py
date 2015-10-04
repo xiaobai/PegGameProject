@@ -74,33 +74,32 @@ def testAndApply(previousPosition, newPosition, removePosition, board, pegsLeft,
 # test the move and see what happens.
 def testNeighborMoves(currentPeg, board, pegsLeft, pegsTotal, rows, moves):
     validMove = False
-    # TODO Implement
     r = getRow(currentPeg)
     d = getDisplacement(currentPeg)
 
     land = getPegNumber(r - 2, d)
     jump = getPegNumber(r - 1, d)
-    validMove = validMove or testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
     
     land = getPegNumber(r, d + 2)
     jump = getPegNumber(r, d + 1)
-    validMove = validMove or testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
 
     land = getPegNumber(r + 2, d + 2)
     jump = getPegNumber(r + 1, d + 1)
-    validMove = validMove or testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
 
     land = getPegNumber(r + 2, d)
     jump = getPegNumber(r + 1, d)
-    validMove = validMove or testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
 
     land = getPegNumber(r, d - 2)
     jump = getPegNumber(r, d - 1)
-    validMove = validMove or testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
 
     land = getPegNumber(r - 2, d - 2)
     jump = getPegNumber(r - 1, d - 1)
-    validMove = validMove or testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
+    validMove |= testAndApply(currentPeg, land, jump, board, pegsLeft, pegsTotal, rows, moves)
     return validMove
 
 def recursiveSolve(board, pegsLeft, pegsTotal, rows, moves):
@@ -125,13 +124,14 @@ def solve(board, rows, pegsTotal, moves):
         recursiveSolve(board, pegsTotal - 1, pegsTotal, rows, moves)
         board[i] = True
     return
-# --- Correct ---
 
 def usage():
     print "Usage: python PegGame.py -s <rows>"
-    print "count must be an integer between 5 and 10, inclusive"
+    print "rows must be an integer between 5 and 10, inclusive"
 
 
+# This is used specifically to check if
+# the flags argument is an integer
 def isInteger(a):
     try:
         int(a)
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     i = 0
     board = []
     moves = []
-    while i < TOTAL_PEGS_TABLE[rows]:
+    for i in range(0,TOTAL_PEGS_TABLE[rows]):
         board.append(True)
         i += 1
 
