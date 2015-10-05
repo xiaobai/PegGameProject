@@ -194,5 +194,5 @@ main = do
     n <- getArgs
     let rows = read (n !! 1) :: Int
     let moves = solve rows
-    putStrLn ("(" ++ show ((totalPegsTable !! rows) - (length moves)) ++ ", " ++ show (fst (moves !! 0)) ++ ")")
+    putStrLn ("(" ++ show (fst (moves !! 0)) ++ ", " ++ show (length moves) ++ ")")
     putStrLn (unlines (map showMoves moves))
