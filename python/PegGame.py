@@ -123,7 +123,9 @@ def solve(board, rows, pegsTotal, moves):
     i = 0
     for i in range(0, pegsTotal):
         board[i] = False
+        moves.append((i, i))
         recursiveSolve(board, pegsTotal - 1, pegsTotal, rows, moves, i)
+        moves.pop()
         board[i] = True
     return
 
@@ -163,6 +165,6 @@ if __name__ == '__main__':
         i += 1
 
     solve(board, rows, TOTAL_PEGS_TABLE[rows], moves)
-    print "(" + str(bestSolution) + ", " + str(initialPeg) + ")"
+    print "(" + str(initialPeg) + ", " + str(TOTAL_PEGS_TABLE[rows] - bestSolution) + ")"
     for m in bestMoves:
         print m

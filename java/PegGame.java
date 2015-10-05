@@ -119,7 +119,7 @@ public class PegGame {
             applyMove(move);
             recursiveSolve(move);
         }
-        System.out.println("(" + currentBest + ", " + bestMoveString.charAt(1) + ")");
+        System.out.println("(" + bestMoveString.charAt(1) + ", " + (maxNumberOfPegs - currentBest) + ")");
         //logger.info(bestMoveString);
         System.out.println(bestMoveString);
     }
