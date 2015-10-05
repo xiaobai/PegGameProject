@@ -1,0 +1,7 @@
+To run:
+
+$python PegGame.py -s <rows>
+
+where $python is your python version 2 runtime. 
+On most up to date linux distributions, this should be `python2'.
+On older systems, this will be just `python'.

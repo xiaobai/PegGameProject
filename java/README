@@ -1,0 +1,11 @@
+To build:
+
+./build.sh
+
+To run:
+
+java PegGame -s <rows>
+
+To clean:
+
+./build.sh clean

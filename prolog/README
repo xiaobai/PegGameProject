@@ -1,0 +1,7 @@
+To run:
+
+swipl -l PegGame.pl
+
+Then, in the interpreter, run the following:
+
+?- solve(<rows>, X, Y).
